@@ -61,39 +61,20 @@ public class ChessPiece {
 
         switch (this.type) {
             case BISHOP -> {
-                // moves towards bottom-left
-                for (int i = 1; i < 7; i++) {
-                    ChessPosition endPosition = new ChessPosition(row - i, col - i);
-                    if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
-                    moves.add(new ChessMove(myPosition, endPosition,null));
-                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
-                }
+                int[][] moveVectors = {
+                        {+1, +1}, // up right
+                        {+1, -1}, // up left
+                        {-1, +1}, // bottom right
+                        {-1, -1}  // bottom left
+                };
 
-                // moves towards bottom-right
-                for (int i = 1; i < 7; i++) {
-                    if (row - i < 1 || col + i > 8) break;
-                    ChessPosition endPosition = new ChessPosition(row - i, col + i);
-                    if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
-                    moves.add(new ChessMove(myPosition, endPosition,null));
-                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
-                }
-
-                // moves towards top-left
-                for (int i = 1; i < 7; i++) {
-                    if (row + i > 8 || col - i < 1) break;
-                    ChessPosition endPosition = new ChessPosition(row + i, col - i);
-                    if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
-                    moves.add(new ChessMove(myPosition, endPosition,null));
-                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
-                }
-
-                // moves towards top-right
-                for (int i = 1; i < 7; i++) {
-                    if (row + i > 8 || col + i > 8) break;
-                    ChessPosition endPosition = new ChessPosition(row + i, col + i);
-                    if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
-                    moves.add(new ChessMove(myPosition, endPosition,null));
-                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                for (int[] moveVector : moveVectors) {
+                    for (int i = 1; i < 7; i++) {
+                        ChessPosition endPosition = new ChessPosition(row + i * moveVector[0], col + i * moveVector[1]);
+                        if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                        moves.add(new ChessMove(myPosition, endPosition, null));
+                        if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                    }
                 }
             }
             case KING -> {
@@ -177,6 +158,9 @@ public class ChessPiece {
                         }
                     }
                 }
+            }
+            case QUEEN -> {
+
             }
         }
 
