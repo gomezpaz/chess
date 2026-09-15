@@ -36,10 +36,10 @@ public class ChessPosition {
 
     /**
      *
-     * @return true if the position is outside the board (invalid)
+     * @return true if the position is valid inside the board (valid)
      */
-    public boolean isInvalid() {
-        return !(row >= 1 && row <= 8 && col >= 1 && col <= 8);
+    public boolean isValid() {
+        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 
     /**
