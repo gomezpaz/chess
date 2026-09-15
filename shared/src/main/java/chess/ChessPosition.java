@@ -62,6 +62,15 @@ public class ChessPosition {
         return piece.getTeamColor() != myTeamColor;
     }
 
+    /**
+     *
+     * @return true if the position is occupied
+     */
+    public boolean isOccupied(ChessBoard board) {
+        ChessPiece piece = board.getPiece(this);
+        return piece != null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
