@@ -68,14 +68,7 @@ public class ChessPiece {
                         {-1, -1}  // bottom left
                 };
 
-                for (int[] moveVector : moveVectors) {
-                    for (int i = 1; i < 7; i++) {
-                        ChessPosition endPosition = new ChessPosition(row + i * moveVector[0], col + i * moveVector[1]);
-                        if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
-                        moves.add(new ChessMove(myPosition, endPosition, null));
-                        if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
-                    }
-                }
+                addAllMovesInVectors(board, myPosition, row, col, myTeamColor, moves, moveVectors);
             }
             case KING -> {
                 for (int i = row - 1; i <= row + 1; i++) {
@@ -160,11 +153,39 @@ public class ChessPiece {
                 }
             }
             case QUEEN -> {
+                int[][] moveVectors = {
+                        {+1, +0}, // up
+                        {-1, +0}, // down
+                        {+0, +1}, // right
+                        {+0, -1}, // left
+                        {+1, +1}, // up right
+                        {+1, -1}, // up left
+                        {-1, +1}, // bottom right
+                        {-1, -1}  // bottom left
+                };
 
+                addAllMovesInVectors(board, myPosition, row, col, myTeamColor, moves, moveVectors);
             }
         }
 
         return moves;
+    }
+
+    /**
+     * It adds all potential moves in a certain vector / direction
+     * it stops when it reaches one of my pieces or the edge,
+     * or eats one of my opponent's pieces and then stops,
+     *
+     */
+    private void addAllMovesInVectors(ChessBoard board, ChessPosition myPosition, int row, int col, ChessGame.TeamColor myTeamColor, List<ChessMove> moves, int[][] moveVectors) {
+        for (int[] moveVector : moveVectors) {
+            for (int i = 1; i < 7; i++) {
+                ChessPosition endPosition = new ChessPosition(row + i * moveVector[0], col + i * moveVector[1]);
+                if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                moves.add(new ChessMove(myPosition, endPosition, null));
+                if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+            }
+        }
     }
 
     @Override
