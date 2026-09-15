@@ -106,6 +106,27 @@ public class ChessPiece {
                     }
                 }
             }
+            case KNIGHT -> {
+                int[][] relativeMoves = {
+                        {-2, -1},
+                        {-2, +1},
+                        {+2, -1},
+                        {+2, +1},
+                        {-1, -2},
+                        {-1, +2},
+                        {+1, -2},
+                        {+1, +2}
+                };
+                for (int [] relativeMove : relativeMoves) {
+                    ChessPosition endPosition = new ChessPosition(
+                            row + relativeMove[0],
+                            col + relativeMove[1]
+                    );
+                    if (endPosition.isValid() && !endPosition.isOccupiedByMe(board, myTeamColor)) {
+                        moves.add(new ChessMove(myPosition, endPosition,null));
+                    }
+                }
+            }
         }
 
         return moves;
