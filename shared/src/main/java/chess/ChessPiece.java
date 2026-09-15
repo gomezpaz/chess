@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -53,9 +54,49 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessGame.TeamColor myTeamColor = board.getPiece(myPosition).getTeamColor();
+        List<ChessMove> moves = new ArrayList<>();
+
         switch (this.type) {
             case BISHOP -> {
-                return List.of();
+                // moves towards bottom-left
+                for (int i = 1; i < 7; i++) {
+                    ChessPosition endPosition = new ChessPosition(row - i, col - i);
+                    if (endPosition.isInvalid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                    moves.add(new ChessMove(myPosition, endPosition,null));
+                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                }
+
+                // moves towards bottom-right
+                for (int i = 1; i < 7; i++) {
+                    if (row - i < 1 || col + i > 8) break;
+                    ChessPosition endPosition = new ChessPosition(row - i, col + i);
+                    if (endPosition.isInvalid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                    moves.add(new ChessMove(myPosition, endPosition,null));
+                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                }
+
+                // moves towards top-left
+                for (int i = 1; i < 7; i++) {
+                    if (row + i > 8 || col - i < 1) break;
+                    ChessPosition endPosition = new ChessPosition(row + i, col - i);
+                    if (endPosition.isInvalid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                    moves.add(new ChessMove(myPosition, endPosition,null));
+                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                }
+
+                // moves towards top-right
+                for (int i = 1; i < 7; i++) {
+                    if (row + i > 8 || col + i > 8) break;
+                    ChessPosition endPosition = new ChessPosition(row + i, col + i);
+                    if (endPosition.isInvalid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                    moves.add(new ChessMove(myPosition, endPosition,null));
+                    if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                }
+
+                return moves;
             }
         }
 

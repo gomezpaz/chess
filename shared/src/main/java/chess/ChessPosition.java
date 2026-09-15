@@ -34,6 +34,34 @@ public class ChessPosition {
         return this.col;
     }
 
+    /**
+     *
+     * @return true if the position is outside the board (invalid)
+     */
+    public boolean isInvalid() {
+        return !(row >= 1 && row <= 8 && col >= 1 && col <= 8);
+    }
+
+    /**
+     *
+     * @return true if the position is occupied by one of my pieces already
+     */
+    public boolean isOccupiedByMe(ChessBoard board, ChessGame.TeamColor myTeamColor) {
+        ChessPiece piece = board.getPiece(this);
+        if (piece == null) return false;
+        return piece.getTeamColor() == myTeamColor;
+    }
+
+    /**
+     *
+     * @return true if the position is occupied by one of my opponent's pieces
+     */
+    public boolean isOccupiedByOpponent(ChessBoard board, ChessGame.TeamColor myTeamColor) {
+        ChessPiece piece = board.getPiece(this);
+        if (piece == null) return false;
+        return piece.getTeamColor() != myTeamColor;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
