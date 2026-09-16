@@ -216,6 +216,6 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "{" + pieceColor + "," + type + "}";
+        return type.toString();
     }
 }

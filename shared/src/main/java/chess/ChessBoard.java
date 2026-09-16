@@ -48,13 +48,17 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (!(o instanceof ChessBoard that)) {
             return false;
         }
-        return Arrays.deepEquals(squares, that.squares);
+        for (int i = 1; i < 8; i++) {
+            for (int j = 1; j < 8; j++) {
+                if (squares[i][j] == null && that.squares[i][j] != null) return false;
+                if (squares[i][j] == null && that.squares[i][j] == null) continue;
+                if (!squares[i][j].equals(that.squares[i][j])) return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -64,8 +68,22 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
-                '}';
+        String s = "";
+        for (int i = 1; i < 8; i++) {
+            s += "\n";
+            for (int j = 1; j < 8; j++) {
+                s += "|";
+                ChessPiece piece = squares[i][j];
+                if (piece ==  null) {
+                    s += " ";
+                } else {
+                    s += piece.toString().charAt(0);
+                }
+                s += "|";
+            }
+        }
+        return s;
     }
+
+
 }
