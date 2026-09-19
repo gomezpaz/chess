@@ -41,8 +41,33 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+        // clear board
         for (ChessPiece[] row: squares) {
             Arrays.fill(row, null);
+        }
+
+        // fill board
+        final ChessPiece.PieceType[] firstRowOrder = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK,
+        };
+        for (int i = 0; i < 8; i++) {
+            ChessGame.TeamColor teamColor = i <= 1 ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
+            for (int j = 0; j < 8; j++) {
+                if (i == 0 || i == 7) {
+                    squares[i][j] = new ChessPiece(teamColor, firstRowOrder[j]);
+                }
+                if (i == 1 || i == 6) {
+                    squares[i][j] = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
+                }
+            }
         }
     }
 
@@ -51,8 +76,8 @@ public class ChessBoard {
         if (!(o instanceof ChessBoard that)) {
             return false;
         }
-        for (int i = 1; i < 8; i++) {
-            for (int j = 1; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 if (squares[i][j] == null && that.squares[i][j] != null) return false;
                 if (squares[i][j] == null && that.squares[i][j] == null) continue;
                 if (!squares[i][j].equals(that.squares[i][j])) return false;
