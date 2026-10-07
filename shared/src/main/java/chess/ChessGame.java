@@ -19,12 +19,13 @@ public class ChessGame {
         // White starts
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
+        board.resetBoard();
     }
 
     // Copy Constructor
     public ChessGame(ChessGame game) {
         teamTurn = game.teamTurn;
-        board = game.board;
+        board = new ChessBoard(game.board);
     }
 
     /**
@@ -62,15 +63,16 @@ public class ChessGame {
         final ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) return null;
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
 
         // Execute all potential moves, for all scenarios see if my king is in jeopardy
         for (ChessMove move : moves) {
             ChessGame potentialGame = new ChessGame(this);
             potentialGame.overrideMove(move);
-            if(!potentialGame.isInCheck(teamTurn)) moves.remove(move);
+            if(!potentialGame.isInCheck(teamTurn)) validMoves.add(move);
         }
 
-        return moves;
+        return validMoves;
     }
 
     public void overrideMove(ChessMove move) {
