@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -52,8 +53,13 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if (startPosition == null) return null;
-        throw new RuntimeException("Not implemented");
+        final ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) return null;
+        List<ChessMove> pieceMoves = (List<ChessMove>) piece.pieceMoves(board, startPosition);
+
+        // Execute all potential moves, for all scenarios see if my king is in jeopardy
+
+        return null;
     }
 
     /**
