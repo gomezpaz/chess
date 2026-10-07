@@ -38,17 +38,34 @@ public class ChessBoard {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
-    public Collection<ChessPosition> getMyPositions(ChessGame.TeamColor color) {
-        List<ChessPosition> positions = new ArrayList<>();
-        for (int i = 1; i < 8; i++) {
-            for (int j = 1; j < 8; j++) {
+    public Collection<ChessPosition> getPositions(ChessGame.TeamColor color) {
+        Collection<ChessPosition> positions = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 ChessPiece piece = squares[i][j];
-                ChessGame.TeamColor pieceColor = piece.getTeamColor();
-                if (pieceColor == color) positions.add(new ChessPosition(i, j));
+                if (piece != null) {
+                    ChessGame.TeamColor pieceColor = piece.getTeamColor();
+                    if (pieceColor == color) positions.add(new ChessPosition(i+1, j+1));
+                }
             }
         }
 
         return positions;
+    }
+
+    public ChessPosition getKingPosition(ChessGame.TeamColor color) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = squares[i][j];
+                if (piece != null) {
+                    ChessGame.TeamColor pieceColor = piece.getTeamColor();
+                    if (pieceColor == color && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        return new ChessPosition(i+1, j+1);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -105,17 +122,20 @@ public class ChessBoard {
     @Override
     public String toString() {
         String s = "";
-        for (int i = 1; i < 8; i++) {
+        for (int i = 7; i >= 0; i--) {
             s += "\n";
-            for (int j = 1; j < 8; j++) {
+            for (int j = 0; j < 8; j++) {
                 s += "|";
                 ChessPiece piece = squares[i][j];
                 if (piece ==  null) {
                     s += " ";
                 } else {
-                    s += piece.toString().charAt(0);
+                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        s += piece.toString().charAt(0);
+                    } else {
+                        s += piece.toString().toLowerCase().charAt(0);
+                    }
                 }
-                s += "|";
             }
         }
         return s;

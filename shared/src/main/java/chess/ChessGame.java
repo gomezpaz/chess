@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,8 +18,7 @@ public class ChessGame {
     public ChessGame() {
         // White starts
         teamTurn = TeamColor.WHITE;
-        board = new ChessBoard();
-        board.resetBoard();
+        this.board = new ChessBoard();
     }
 
     /**
@@ -79,7 +79,22 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // Iterate through all potential moves of the other team, and see if endPosition is position of my king
+        TeamColor opponentColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        ChessPosition myKingPosition = board.getKingPosition(teamColor);
+        Collection<ChessPosition> positions = board.getPositions(opponentColor);
+        Collection<ChessMove> allPotentialMoves = new ArrayList<>();
+        for (ChessPosition position : positions) {
+            ChessPiece piece = board.getPiece(position);
+            if (piece == null) continue;
+            Collection<ChessMove> moves = piece.pieceMoves(board, position);
+            allPotentialMoves.addAll(moves);
+        }
+        for (ChessMove move : allPotentialMoves) {
+            ChessPosition endPosition = move.getEndPosition();
+            if (endPosition.equals(myKingPosition)) return true;
+        }
+        return false;
     }
 
     /**
