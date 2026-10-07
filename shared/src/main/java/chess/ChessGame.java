@@ -17,6 +17,7 @@ public class ChessGame {
         // White starts
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
+        board.resetBoard();
     }
 
     /**
@@ -51,6 +52,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        if (startPosition == null) return null;
         throw new RuntimeException("Not implemented");
     }
 
