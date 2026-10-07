@@ -18,7 +18,13 @@ public class ChessGame {
     public ChessGame() {
         // White starts
         teamTurn = TeamColor.WHITE;
-        this.board = new ChessBoard();
+        board = new ChessBoard();
+    }
+
+    // Copy Constructor
+    public ChessGame(ChessGame game) {
+        teamTurn = game.teamTurn;
+        board = game.board;
     }
 
     /**
@@ -55,11 +61,25 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         final ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) return null;
-        List<ChessMove> pieceMoves = (List<ChessMove>) piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
 
         // Execute all potential moves, for all scenarios see if my king is in jeopardy
+        for (ChessMove move : moves) {
+            ChessGame potentialGame = new ChessGame(this);
+            potentialGame.overrideMove(move);
+            if(!potentialGame.isInCheck(teamTurn)) moves.remove(move);
+        }
 
-        return null;
+        return moves;
+    }
+
+    public void overrideMove(ChessMove move) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+        ChessPosition endPosition = move.getEndPosition();
+        board.removePiece(startPosition);
+        board.addPiece(endPosition, piece);
+        teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**
@@ -69,7 +89,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        if (validMoves == null || !validMoves.contains(move)) throw new InvalidMoveException();
+        overrideMove(move);
     }
 
     /**
