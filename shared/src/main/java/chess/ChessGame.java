@@ -82,6 +82,11 @@ public class ChessGame {
         ChessPosition endPosition = move.getEndPosition();
         board.removePiece(startPosition);
         board.addPiece(endPosition, piece);
+        // promotion piece
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+        if (promotionPiece != null) {
+            board.addPiece(endPosition, new ChessPiece(teamTurn, promotionPiece));
+        }
         teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
