@@ -97,6 +97,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (move.getStartPosition().isOccupiedByOpponent(board, teamTurn)) throw new InvalidMoveException();
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         if (validMoves == null || !validMoves.contains(move)) throw new InvalidMoveException();
         overrideMove(move);
