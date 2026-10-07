@@ -189,7 +189,7 @@ public class ChessPiece {
      */
     private void addAllMovesInVectors(ChessBoard board, ChessPosition myPosition, int row, int col, ChessGame.TeamColor myTeamColor, List<ChessMove> moves, int[][] moveVectors) {
         for (int[] moveVector : moveVectors) {
-            for (int i = 1; i < 7; i++) {
+            for (int i = 1; i < 8; i++) {
                 ChessPosition endPosition = new ChessPosition(row + i * moveVector[0], col + i * moveVector[1]);
                 if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
                 moves.add(new ChessMove(myPosition, endPosition, null));
