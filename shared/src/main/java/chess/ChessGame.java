@@ -113,7 +113,16 @@ public class ChessGame {
         // Iterate through all potential moves of the other team, and see if endPosition is position of my king
         TeamColor opponentColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         ChessPosition myKingPosition = board.getKingPosition(teamColor);
-        Collection<ChessPosition> positions = board.getPositions(opponentColor);
+
+        for (ChessMove move : getAllPotentialMoves(opponentColor)) {
+            ChessPosition endPosition = move.getEndPosition();
+            if (endPosition.equals(myKingPosition)) return true;
+        }
+        return false;
+    }
+
+    public Collection<ChessMove> getAllPotentialMoves(TeamColor color) {
+        Collection<ChessPosition> positions = board.getPositions(color);
         Collection<ChessMove> allPotentialMoves = new ArrayList<>();
         for (ChessPosition position : positions) {
             ChessPiece piece = board.getPiece(position);
@@ -121,11 +130,8 @@ public class ChessGame {
             Collection<ChessMove> moves = piece.pieceMoves(board, position);
             allPotentialMoves.addAll(moves);
         }
-        for (ChessMove move : allPotentialMoves) {
-            ChessPosition endPosition = move.getEndPosition();
-            if (endPosition.equals(myKingPosition)) return true;
-        }
-        return false;
+
+        return allPotentialMoves;
     }
 
     /**
@@ -157,7 +163,21 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) return false;
+
+        Collection<ChessPosition> positions = board.getPositions(teamColor);
+        for (ChessPosition position : positions) {
+            ChessPiece piece = board.getPiece(position);
+            if (piece == null) continue;
+
+            Collection<ChessMove> moves = piece.pieceMoves(board, position);
+            for (ChessMove move : moves) {
+                ChessGame potentialGame = new ChessGame(this);
+                potentialGame.overrideMove(move);
+                if (!potentialGame.isInCheck(teamColor)) return false;
+            }
+        }
+        return true;
     }
 
     /**
