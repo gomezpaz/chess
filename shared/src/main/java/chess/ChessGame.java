@@ -63,6 +63,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         final ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) return null;
+        final ChessGame.TeamColor team = piece.getTeamColor();
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
 
@@ -70,7 +71,7 @@ public class ChessGame {
         for (ChessMove move : moves) {
             ChessGame potentialGame = new ChessGame(this);
             potentialGame.overrideMove(move);
-            if(!potentialGame.isInCheck(teamTurn)) validMoves.add(move);
+            if(!potentialGame.isInCheck(team)) validMoves.add(move);
         }
 
         return validMoves;
