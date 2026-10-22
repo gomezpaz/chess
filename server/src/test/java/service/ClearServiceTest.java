@@ -20,7 +20,6 @@ public class ClearServiceTest {
     }
 
     @Test
-    @Order(1)
     @DisplayName("Clear Removes All")
     public void clearRemovesAll() throws DataAccessException {
         userDAO.createUser(new UserData("u","p","e"));

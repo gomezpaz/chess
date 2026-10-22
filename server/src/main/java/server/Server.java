@@ -11,11 +11,6 @@ import java.util.Map;
 public class Server {
 
     private final Javalin javalin;
-    private static UserDAO userDAO;
-    private static AuthDAO authDAO;
-    private static GameDAO gameDAO;
-    private static ClearService clearService;
-    private static ClearHandler clearHandler;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -23,11 +18,11 @@ public class Server {
         // Register your endpoints and exception handlers here.
 
         // CLEAR
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
-        clearService = new ClearService(userDAO, authDAO, gameDAO);
-        clearHandler = new ClearHandler(clearService);
+        UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
+        ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
+        ClearHandler clearHandler = new ClearHandler(clearService);
         javalin.delete("/db", clearHandler::clear);
 
         // TODO: find a way to make exceptions cleaner
@@ -35,6 +30,8 @@ public class Server {
         javalin.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);
         javalin.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
         javalin.exception(Exception.class, this::exceptionHandler);
+
+
     }
 
     public int run(int desiredPort) {
