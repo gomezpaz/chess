@@ -15,12 +15,11 @@ public class Server {
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        // Register your endpoints and exception handlers here.
-
-        // CLEAR
         UserDAO userDAO = new MemoryUserDAO();
         AuthDAO authDAO = new MemoryAuthDAO();
         GameDAO gameDAO = new MemoryGameDAO();
+
+        // CLEAR
         ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
         ClearHandler clearHandler = new ClearHandler(clearService);
         javalin.delete("/db", clearHandler::clear);
@@ -31,6 +30,10 @@ public class Server {
         javalin.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
         javalin.exception(Exception.class, this::exceptionHandler);
 
+        // REGISTER
+        UserService userService = new UserService(userDAO, authDAO);
+        UserHandler userHandler = new UserHandler(userService);
+        javalin.post("/user", userHandler::register);
 
     }
 
