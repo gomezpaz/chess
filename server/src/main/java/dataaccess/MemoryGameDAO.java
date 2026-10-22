@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.Collection;
@@ -12,26 +13,30 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public int createGame(String gameName) throws DataAccessException {
-        return 0;
+        final int id = nextId++;
+        games.put(id, new GameData(id, null, null, gameName, new ChessGame()));
+        return id;
     }
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        return null;
+        return games.get(gameID);
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return null;
+        return (Collection<GameData>) games;
     }
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-
+        // If a user attempts to update a non-existent game throw exception
+        if (!games.containsKey(game.gameID())) throw new DataAccessException("game not found");
+        games.put(game.gameID(), game);
     }
 
     @Override
     public void clearGames() throws DataAccessException {
-
+        games.clear();
     }
 }
