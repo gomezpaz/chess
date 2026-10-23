@@ -41,6 +41,11 @@ public class Server {
         // LOGOUT
         javalin.delete("/session", userHandler::logout);
 
+        // CREATE GAME
+        GameService gameService = new GameService(authDAO, gameDAO);
+        GameHandler gameHandler = new GameHandler(gameService);
+        javalin.post("/game", gameHandler::createGame);
+
     }
 
     public int run(int desiredPort) {
