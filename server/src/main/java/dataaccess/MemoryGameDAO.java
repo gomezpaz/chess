@@ -20,24 +20,18 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
-        return games.get(gameID);
-    }
+    public GameData getGame(int gameID) { return games.get(gameID); }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
-        return new ArrayList<>(games.values());
-    }
+    public Collection<GameData> listGames() { return new ArrayList<>(games.values()); }
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
         // If a user attempts to update a non-existent game throw exception
-        if (!games.containsKey(game.gameID())) throw new DataAccessException("game not found");
+        if (!games.containsKey(game.gameID())) { throw new DataAccessException("game not found"); }
         games.put(game.gameID(), game);
     }
 
     @Override
-    public void clearGames() throws DataAccessException {
-        games.clear();
-    }
+    public void clearGames() { games.clear(); }
 }

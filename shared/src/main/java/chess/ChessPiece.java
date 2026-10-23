@@ -191,9 +191,9 @@ public class ChessPiece {
         for (int[] moveVector : moveVectors) {
             for (int i = 1; i < 8; i++) {
                 ChessPosition endPosition = new ChessPosition(row + i * moveVector[0], col + i * moveVector[1]);
-                if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) break;
+                if (!endPosition.isValid() || endPosition.isOccupiedByMe(board, myTeamColor)) { break; }
                 moves.add(new ChessMove(myPosition, endPosition, null));
-                if (endPosition.isOccupiedByOpponent(board, myTeamColor)) break;
+                if (endPosition.isOccupiedByOpponent(board, myTeamColor)) { break; }
             }
         }
     }

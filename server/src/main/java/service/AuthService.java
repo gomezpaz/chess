@@ -12,14 +12,9 @@ public class AuthService {
     }
 
     public AuthData verifyAuth(String token) throws DataAccessException {
-        if (token == null) {
-            throw new UnauthorizedException("unauthorized");
-        }
+        if (token == null) { throw new UnauthorizedException("unauthorized"); }
         AuthData auth = authDAO.getAuth(token);
-        if (auth == null) {
-            throw new UnauthorizedException("unauthorized");
-        } else {
-            return auth;
-        }
+        if (auth == null) { throw new UnauthorizedException("unauthorized"); }
+        return auth;
     }
 }

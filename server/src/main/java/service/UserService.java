@@ -18,11 +18,9 @@ public class UserService {
     }
 
     public RegisterResult register(RegisterRequest req) throws DataAccessException {
-        if (req == null) throw new BadRequestException("bad request");
-        if (isBlank(req.username()) || isBlank(req.password()) || isBlank(req.email())) {
-            throw new BadRequestException("bad request");
-        }
-        if (userDAO.getUser(req.username()) != null) throw new AlreadyTakenException("already taken");
+        if (req == null) { throw new BadRequestException("bad request"); }
+        if (isBlank(req.username()) || isBlank(req.password()) || isBlank(req.email())) { throw new BadRequestException("bad request"); }
+        if (userDAO.getUser(req.username()) != null) { throw new AlreadyTakenException("already taken"); }
 
         userDAO.createUser(new UserData(req.username(), req.password(), req.email()));
 
@@ -32,14 +30,12 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest req) throws DataAccessException {
-        if (req == null) throw new BadRequestException("bad request");
-        if (isBlank(req.username()) || isBlank(req.password())) {
-            throw new BadRequestException("bad request");
-        }
+        if (req == null) { throw new BadRequestException("bad request"); }
+        if (isBlank(req.username()) || isBlank(req.password())) { throw new BadRequestException("bad request"); }
         UserData user = userDAO.getUser(req.username());
-        if (user == null) throw new UnauthorizedException("unauthorized");
+        if (user == null) { throw new UnauthorizedException("unauthorized"); }
         // check password
-        if (!req.password().equals(user.password())) throw new UnauthorizedException("unauthorized");
+        if (!req.password().equals(user.password())) { throw new UnauthorizedException("unauthorized"); }
 
         String token = generateToken();
         authDAO.createAuth(new AuthData(token, req.username()));

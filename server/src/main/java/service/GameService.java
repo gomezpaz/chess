@@ -5,8 +5,6 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 
-import java.util.Collection;
-
 public class GameService {
     private final AuthService authService;
     private final GameDAO gameDAO;
@@ -18,9 +16,7 @@ public class GameService {
 
     public CreateGameResult createGame(CreateGameRequest req) throws DataAccessException {
         authService.verifyAuth(req.authToken());
-        if (isBlank(req.gameName())) {
-            throw new BadRequestException("bad request");
-        }
+        if (isBlank(req.gameName())) { throw new BadRequestException("bad request"); }
         int id = gameDAO.createGame(req.gameName());
         return new CreateGameResult(id);
     }
@@ -33,33 +29,24 @@ public class GameService {
     public void joinGame(JoinGameRequest req) throws DataAccessException {
         AuthData auth = authService.verifyAuth(req.authToken());
         String username = auth.username();
-        if (req.gameID() == null) {
-            throw new BadRequestException("bad request");
-        }
+        if (req.gameID() == null) { throw new BadRequestException("bad request"); }
         ChessGame.TeamColor playerColor = req.playerColor();
 
-        if (playerColor != ChessGame.TeamColor.BLACK && playerColor != ChessGame.TeamColor.WHITE) {
-            throw new BadRequestException("bad request");
-        }
+        boolean invalidColor = playerColor != ChessGame.TeamColor.BLACK && playerColor != ChessGame.TeamColor.WHITE;
+        if (invalidColor) { throw new BadRequestException("bad request"); }
 
         GameData game = gameDAO.getGame(req.gameID());
-        if (game == null) {
-            throw new BadRequestException("bad request");
-        }
+        if (game == null) { throw new BadRequestException("bad request"); }
 
         String whiteUsername = game.whiteUsername();
         String blackUsername = game.blackUsername();
         switch(playerColor) {
             case WHITE -> {
-                if (game.whiteUsername() != null) {
-                    throw new AlreadyTakenException("taken");
-                }
+                if (game.whiteUsername() != null) { throw new AlreadyTakenException("taken"); }
                 whiteUsername = username;
             }
             case BLACK -> {
-                if (game.blackUsername() != null) {
-                    throw new AlreadyTakenException("taken");
-                }
+                if (game.blackUsername() != null) { throw new AlreadyTakenException("taken"); }
                 blackUsername = username;
             }
         }

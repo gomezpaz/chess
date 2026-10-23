@@ -66,4 +66,36 @@ public class GameServiceTest {
         Assertions.assertNotNull(game);
         Assertions.assertSame(game.whiteUsername(), username);
     }
+
+    @Test
+    @DisplayName("White Already Taken")
+    public void WhiteAlreadyTaken() throws DataAccessException {
+        CreateGameResult createGameResult = gameService.createGame(
+                new CreateGameRequest("auth token", "game name")
+        );
+        int id = createGameResult.gameID();
+        gameService.joinGame(
+                new JoinGameRequest("auth token", ChessGame.TeamColor.WHITE, id)
+        );
+        authDAO.createAuth(new AuthData("another token","s"));
+        Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(
+                new JoinGameRequest("another token", ChessGame.TeamColor.WHITE, id)
+        ));
+    }
+
+    @Test
+    @DisplayName("Join Game As Black")
+    public void joinGameAsBlack() throws DataAccessException {
+        CreateGameResult createGameResult = gameService.createGame(
+                new CreateGameRequest("auth token", "game name")
+        );
+        int id = createGameResult.gameID();
+        gameService.joinGame(
+                new JoinGameRequest("auth token", ChessGame.TeamColor.BLACK, id)
+        );
+        GameData game = gameDAO.getGame(id);
+        String username = authDAO.getAuth("auth token").username();
+        Assertions.assertNotNull(game);
+        Assertions.assertSame(game.blackUsername(), username);
+    }
 }

@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -62,7 +61,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         final ChessPiece piece = board.getPiece(startPosition);
-        if (piece == null) return null;
+        if (piece == null) { return null; }
         final ChessGame.TeamColor team = piece.getTeamColor();
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
@@ -71,7 +70,7 @@ public class ChessGame {
         for (ChessMove move : moves) {
             ChessGame potentialGame = new ChessGame(this);
             potentialGame.overrideMove(move);
-            if(!potentialGame.isInCheck(team)) validMoves.add(move);
+            if (!potentialGame.isInCheck(team)) { validMoves.add(move); }
         }
 
         return validMoves;
@@ -98,9 +97,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (move.getStartPosition().isOccupiedByOpponent(board, teamTurn)) throw new InvalidMoveException();
+        if (move.getStartPosition().isOccupiedByOpponent(board, teamTurn)) { throw new InvalidMoveException(); }
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
-        if (validMoves == null || !validMoves.contains(move)) throw new InvalidMoveException();
+        if (validMoves == null || !validMoves.contains(move)) { throw new InvalidMoveException(); }
         overrideMove(move);
     }
 
@@ -117,7 +116,7 @@ public class ChessGame {
 
         for (ChessMove move : getAllPotentialMoves(opponentColor)) {
             ChessPosition endPosition = move.getEndPosition();
-            if (endPosition.equals(myKingPosition)) return true;
+            if (endPosition.equals(myKingPosition)) { return true; }
         }
         return false;
     }
@@ -127,7 +126,7 @@ public class ChessGame {
         Collection<ChessMove> allPotentialMoves = new ArrayList<>();
         for (ChessPosition position : positions) {
             ChessPiece piece = board.getPiece(position);
-            if (piece == null) continue;
+            if (piece == null) { continue; }
             Collection<ChessMove> moves = piece.pieceMoves(board, position);
             allPotentialMoves.addAll(moves);
         }
@@ -145,12 +144,12 @@ public class ChessGame {
         Collection<ChessPosition> positions = board.getPositions(teamColor);
         for (ChessPosition position : positions) {
             ChessPiece piece = board.getPiece(position);
-            if (piece == null) continue;
+            if (piece == null) { continue; }
             Collection<ChessMove> moves = piece.pieceMoves(board, position);
             for (ChessMove move : moves) {
                 ChessGame potentialGame = new ChessGame(this);
                 potentialGame.overrideMove(move);
-                if (!potentialGame.isInCheck(teamColor)) return false;
+                if (!potentialGame.isInCheck(teamColor)) { return false; }
             }
         }
         return true;
@@ -164,18 +163,18 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) return false;
+        if (isInCheck(teamColor)) { return false; }
 
         Collection<ChessPosition> positions = board.getPositions(teamColor);
         for (ChessPosition position : positions) {
             ChessPiece piece = board.getPiece(position);
-            if (piece == null) continue;
+            if (piece == null) { continue; }
 
             Collection<ChessMove> moves = piece.pieceMoves(board, position);
             for (ChessMove move : moves) {
                 ChessGame potentialGame = new ChessGame(this);
                 potentialGame.overrideMove(move);
-                if (!potentialGame.isInCheck(teamColor)) return false;
+                if (!potentialGame.isInCheck(teamColor)) { return false; }
             }
         }
         return true;

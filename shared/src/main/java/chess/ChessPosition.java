@@ -48,7 +48,7 @@ public class ChessPosition {
      */
     public boolean isOccupiedByMe(ChessBoard board, ChessGame.TeamColor myTeamColor) {
         ChessPiece piece = board.getPiece(this);
-        if (piece == null) return false;
+        if (piece == null) { return false; }
         return piece.getTeamColor() == myTeamColor;
     }
 
@@ -58,7 +58,7 @@ public class ChessPosition {
      */
     public boolean isOccupiedByOpponent(ChessBoard board, ChessGame.TeamColor myTeamColor) {
         ChessPiece piece = board.getPiece(this);
-        if (piece == null) return false;
+        if (piece == null) { return false; }
         return piece.getTeamColor() != myTeamColor;
     }
 
