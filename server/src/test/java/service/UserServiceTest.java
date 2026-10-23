@@ -47,7 +47,8 @@ public class UserServiceTest {
     @DisplayName("Login Successful")
     public void loginSuccessful() throws DataAccessException {
         RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
-        // could add logout here later
+        String token = registerResult.authToken();
+        userService.logout(new LogoutRequest(token));
         LoginResult loginResult = userService.login(new LoginRequest("u","p"));
         Assertions.assertNotNull(loginResult.authToken());
         Assertions.assertNotEquals(registerResult.authToken(), loginResult.authToken());
@@ -65,9 +66,17 @@ public class UserServiceTest {
     @DisplayName("Bad Password Login")
     public void badPasswordLogin() throws DataAccessException {
         RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
-        // could add logout here later
         Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(
                 new LoginRequest("u","another password")
         ));
+    }
+
+    @Test
+    @DisplayName("Logout Successful")
+    public void logoutSuccessful() throws DataAccessException {
+        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
+        String token = registerResult.authToken();
+        userService.logout(new LogoutRequest(token));
+        Assertions.assertNull(authDAO.getAuth(token));
     }
 }

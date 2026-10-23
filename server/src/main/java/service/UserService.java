@@ -9,10 +9,12 @@ import java.util.UUID;
 public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
+    private final AuthService authService;
 
     public UserService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
+        this.authService = new AuthService(authDAO);
     }
 
     public RegisterResult register(RegisterRequest req) throws DataAccessException {
@@ -42,6 +44,11 @@ public class UserService {
         String token = generateToken();
         authDAO.createAuth(new AuthData(token, req.username()));
         return new LoginResult(req.username(), token);
+    }
+
+    public void logout(LogoutRequest req) throws DataAccessException {
+        authService.verifyAuth(req.authToken());
+        authDAO.deleteAuth(req.authToken());
     }
 
     private boolean isBlank(String string) {

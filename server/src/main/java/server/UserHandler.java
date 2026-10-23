@@ -26,4 +26,11 @@ public class UserHandler {
         ctx.status(200);
         ctx.result(serializer.toJson(result));
     }
+
+    public void logout(Context ctx) throws DataAccessException {
+        String token = ctx.header("authorization");
+        userService.logout(new LogoutRequest(token));
+        ctx.status(200);
+        ctx.result("{}");
+    }
 }
