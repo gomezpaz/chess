@@ -35,6 +35,9 @@ public class Server {
         UserHandler userHandler = new UserHandler(userService);
         javalin.post("/user", userHandler::register);
 
+        // LOGIN
+        javalin.post("/session", userHandler::login);
+
     }
 
     public int run(int desiredPort) {
