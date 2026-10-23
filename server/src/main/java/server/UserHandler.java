@@ -14,15 +14,15 @@ public class UserHandler {
     }
 
     public void register(Context ctx) throws DataAccessException {
-        RegisterRequest req = serializer.fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult result = userService.register(req);
+        RegisterRequest body = serializer.fromJson(ctx.body(), RegisterRequest.class);
+        RegisterResult result = userService.register(body);
         ctx.status(200);
         ctx.result(serializer.toJson(result));
     }
 
     public void login(Context ctx) throws DataAccessException {
-        LoginRequest req = serializer.fromJson(ctx.body(), LoginRequest.class);
-        LoginResult result = userService.login(req);
+        LoginRequest body = serializer.fromJson(ctx.body(), LoginRequest.class);
+        LoginResult result = userService.login(body);
         ctx.status(200);
         ctx.result(serializer.toJson(result));
     }
