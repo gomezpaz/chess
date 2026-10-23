@@ -30,22 +30,18 @@ public class Server {
         javalin.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
         javalin.exception(Exception.class, this::exceptionHandler);
 
-        // REGISTER
+        // USER SERVICES
         UserService userService = new UserService(userDAO, authDAO);
         UserHandler userHandler = new UserHandler(userService);
         javalin.post("/user", userHandler::register);
-
-        // LOGIN
         javalin.post("/session", userHandler::login);
-
-        // LOGOUT
         javalin.delete("/session", userHandler::logout);
 
-        // CREATE GAME
+        // GAME SERVICES
         GameService gameService = new GameService(authDAO, gameDAO);
         GameHandler gameHandler = new GameHandler(gameService);
         javalin.post("/game", gameHandler::createGame);
-
+        javalin.get("/game", gameHandler::listGames);
     }
 
     public int run(int desiredPort) {

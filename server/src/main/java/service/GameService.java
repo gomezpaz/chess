@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.*;
+import model.GameData;
+
+import java.util.Collection;
 
 public class GameService {
     private final AuthService authService;
@@ -18,6 +21,11 @@ public class GameService {
         }
         int id = gameDAO.createGame(req.gameName());
         return new CreateGameResult(id);
+    }
+
+    public ListGamesResult listGames(ListGamesRequest req) throws DataAccessException {
+        authService.verifyAuth(req.authToken());
+        return new ListGamesResult(gameDAO.listGames());
     }
 
     private boolean isBlank(String string) {

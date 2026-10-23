@@ -24,4 +24,11 @@ public class GameHandler {
         ctx.result(serializer.toJson(result));
 
     }
+
+    public void listGames(Context ctx) throws DataAccessException {
+        ListGamesRequest req = new ListGamesRequest(ctx.header("authorization"));
+        ListGamesResult result = gameService.listGames(req);
+        ctx.status(200);
+        ctx.result(serializer.toJson(result));
+    }
 }
