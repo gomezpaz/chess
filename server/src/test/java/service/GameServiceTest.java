@@ -69,7 +69,7 @@ public class GameServiceTest {
 
     @Test
     @DisplayName("White Already Taken")
-    public void WhiteAlreadyTaken() throws DataAccessException {
+    public void whiteAlreadyTaken() throws DataAccessException {
         CreateGameResult createGameResult = gameService.createGame(
                 new CreateGameRequest("auth token", "game name")
         );

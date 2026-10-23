@@ -173,7 +173,6 @@ public class ChessPiece {
                         {+0, +1}, // right
                         {+0, -1}  // left
                 };
-
                 addAllMovesInVectors(board, myPosition, row, col, myTeamColor, moves, moveVectors);
             }
         }
@@ -187,7 +186,14 @@ public class ChessPiece {
      * or eats one of my opponent's pieces and then stops,
      *
      */
-    private void addAllMovesInVectors(ChessBoard board, ChessPosition myPosition, int row, int col, ChessGame.TeamColor myTeamColor, List<ChessMove> moves, int[][] moveVectors) {
+    private void addAllMovesInVectors(
+            ChessBoard board,
+            ChessPosition myPosition,
+            int row,
+            int col,
+            ChessGame.TeamColor myTeamColor,
+            List<ChessMove> moves,
+            int[][] moveVectors) {
         for (int[] moveVector : moveVectors) {
             for (int i = 1; i < 8; i++) {
                 ChessPosition endPosition = new ChessPosition(row + i * moveVector[0], col + i * moveVector[1]);

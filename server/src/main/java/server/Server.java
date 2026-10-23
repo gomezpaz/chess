@@ -24,7 +24,7 @@ public class Server {
         ClearHandler clearHandler = new ClearHandler(clearService);
         javalin.delete("/db", clearHandler::clear);
 
-        // TODO: find a way to make exceptions cleaner
+        // EXCEPTIONS
         javalin.exception(BadRequestException.class, this::badRequestExceptionHandler);
         javalin.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);
         javalin.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
