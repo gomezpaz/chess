@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import model.AuthData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,10 +13,11 @@ public class GameServiceTest {
     private GameService gameService;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws DataAccessException {
         gameDAO = new MemoryGameDAO();
         authDAO = new MemoryAuthDAO();
         gameService = new GameService(authDAO, gameDAO);
+        authDAO.createAuth(new AuthData("auth token","u"));
     }
 
     @Test
