@@ -31,4 +31,19 @@ public class GameHandler {
         ctx.status(200);
         ctx.result(serializer.toJson(result));
     }
+
+    public void joinGame(Context ctx) throws DataAccessException {
+        JoinGameRequest body = serializer.fromJson(ctx.body(), JoinGameRequest.class);
+        if (body == null) {
+            throw new BadRequestException("bad request");
+        }
+        JoinGameRequest req = new JoinGameRequest(
+                ctx.header("authorization"),
+                body.playerColor(),
+                body.gameID()
+        );
+        gameService.joinGame(req);
+        ctx.status(200);
+        ctx.result("{}");
+    }
 }

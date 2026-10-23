@@ -1,6 +1,8 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
+import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
@@ -26,6 +28,49 @@ public class GameService {
     public ListGamesResult listGames(ListGamesRequest req) throws DataAccessException {
         authService.verifyAuth(req.authToken());
         return new ListGamesResult(gameDAO.listGames());
+    }
+
+    public void joinGame(JoinGameRequest req) throws DataAccessException {
+        AuthData auth = authService.verifyAuth(req.authToken());
+        String username = auth.username();
+        if (req.gameID() == null) {
+            throw new BadRequestException("bad request");
+        }
+        ChessGame.TeamColor playerColor = req.playerColor();
+
+        if (playerColor != ChessGame.TeamColor.BLACK && playerColor != ChessGame.TeamColor.WHITE) {
+            throw new BadRequestException("bad request");
+        }
+
+        GameData game = gameDAO.getGame(req.gameID());
+        if (game == null) {
+            throw new BadRequestException("bad request");
+        }
+
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
+        switch(playerColor) {
+            case WHITE -> {
+                if (game.whiteUsername() != null) {
+                    throw new AlreadyTakenException("taken");
+                }
+                whiteUsername = username;
+            }
+            case BLACK -> {
+                if (game.blackUsername() != null) {
+                    throw new AlreadyTakenException("taken");
+                }
+                blackUsername = username;
+            }
+        }
+
+        gameDAO.updateGame(new GameData(
+                game.gameID(),
+                whiteUsername,
+                blackUsername,
+                game.gameName(),
+                game.game()
+        ));
     }
 
     private boolean isBlank(String string) {
