@@ -3,6 +3,9 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import service.exceptions.AlreadyTakenException;
+import service.exceptions.BadRequestException;
+import service.exceptions.UnauthorizedException;
 
 import java.util.UUID;
 

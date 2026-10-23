@@ -1,4 +1,4 @@
-package service;
+package service.exceptions;
 import dataaccess.DataAccessException;
 
 public class UnauthorizedException extends DataAccessException {

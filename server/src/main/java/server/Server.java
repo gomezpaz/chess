@@ -5,6 +5,9 @@ import dataaccess.*;
 import io.javalin.*;
 import service.*;
 import io.javalin.http.Context;
+import service.exceptions.AlreadyTakenException;
+import service.exceptions.BadRequestException;
+import service.exceptions.UnauthorizedException;
 
 import java.util.Map;
 

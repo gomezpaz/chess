@@ -1,9 +1,10 @@
 package service;
 
 import dataaccess.*;
-import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.*;
+import service.exceptions.AlreadyTakenException;
+import service.exceptions.BadRequestException;
+import service.exceptions.UnauthorizedException;
 
 public class UserServiceTest {
     private UserDAO userDAO;

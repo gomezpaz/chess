@@ -4,6 +4,8 @@ import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import model.GameData;
+import service.exceptions.AlreadyTakenException;
+import service.exceptions.BadRequestException;
 
 public class GameService {
     private final AuthService authService;
