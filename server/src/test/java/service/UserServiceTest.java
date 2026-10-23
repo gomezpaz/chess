@@ -6,9 +6,9 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 
 public class UserServiceTest {
-    private static UserDAO userDAO;
-    private static AuthDAO authDAO;
-    private static UserService userService;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
@@ -40,6 +40,34 @@ public class UserServiceTest {
         userService.register(new RegisterRequest("u","p","e"));
         Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(
                 new RegisterRequest("u","p2","e2")
+        ));
+    }
+
+    @Test
+    @DisplayName("Login Successful")
+    public void loginSuccessful() throws DataAccessException {
+        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
+        // could add logout here later
+        LoginResult loginResult = userService.login(new LoginRequest("u","p"));
+        Assertions.assertNotNull(loginResult.authToken());
+        Assertions.assertNotEquals(registerResult.authToken(), loginResult.authToken());
+    }
+
+    @Test
+    @DisplayName("Login Unsuccessful")
+    public void loginUnsuccessful() throws DataAccessException {
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(
+                new LoginRequest("santi","p")
+        ));
+    }
+
+    @Test
+    @DisplayName("Bad Password Login")
+    public void badPasswordLogin() throws DataAccessException {
+        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
+        // could add logout here later
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(
+                new LoginRequest("u","another password")
         ));
     }
 }

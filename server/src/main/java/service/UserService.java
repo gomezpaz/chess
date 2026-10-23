@@ -23,9 +23,25 @@ public class UserService {
         if (userDAO.getUser(req.username()) != null) throw new AlreadyTakenException("already taken");
 
         userDAO.createUser(new UserData(req.username(), req.password(), req.email()));
+
         String token = generateToken();
         authDAO.createAuth(new AuthData(token, req.username()));
         return new RegisterResult(req.username(), token);
+    }
+
+    public LoginResult login(LoginRequest req) throws DataAccessException {
+        if (req == null) throw new BadRequestException("bad request");
+        if (isBlank(req.username()) || isBlank(req.password())) {
+            throw new BadRequestException("bad request");
+        }
+        UserData user = userDAO.getUser(req.username());
+        if (user == null) throw new UnauthorizedException("unauthorized");
+        // check password
+        if (!req.password().equals(user.password())) throw new UnauthorizedException("unauthorized");
+
+        String token = generateToken();
+        authDAO.createAuth(new AuthData(token, req.username()));
+        return new LoginResult(req.username(), token);
     }
 
     private boolean isBlank(String string) {

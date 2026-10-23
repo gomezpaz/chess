@@ -6,10 +6,10 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 
 public class ClearServiceTest {
-    private static UserDAO userDAO;
-    private static AuthDAO authDAO;
-    private static GameDAO gameDAO;
-    private static ClearService clearService;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
+    private ClearService clearService;
 
     @BeforeEach
     public void setup() {
