@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import dataaccess.sql.*;
 import io.javalin.*;
 import service.*;
 import io.javalin.http.Context;
@@ -16,6 +17,12 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
+        try {
+            DatabaseInitializer db = new DatabaseInitializer();
+        }  catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         UserDAO userDAO = new MemoryUserDAO();
