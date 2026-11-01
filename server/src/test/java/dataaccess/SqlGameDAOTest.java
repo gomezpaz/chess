@@ -70,7 +70,7 @@ public class SqlGameDAOTest {
         GameData game = gameDAO.getGame(id);
         String username = authDAO.getAuth("auth token").username();
         Assertions.assertNotNull(game);
-        Assertions.assertSame(game.whiteUsername(), username);
+        Assertions.assertEquals(game.whiteUsername(), username);
     }
 
     @Test
@@ -102,6 +102,6 @@ public class SqlGameDAOTest {
         GameData game = gameDAO.getGame(id);
         String username = authDAO.getAuth("auth token").username();
         Assertions.assertNotNull(game);
-        Assertions.assertSame(game.blackUsername(), username);
+        Assertions.assertEquals(game.blackUsername(), username);
     }
 }
