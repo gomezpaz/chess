@@ -29,9 +29,7 @@ public class SqlUserDAO extends SqlDataAccess implements UserDAO {
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
-        }
+        } catch (Exception e) { throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage())); }
         return null;
     }
 

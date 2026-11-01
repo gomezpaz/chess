@@ -9,6 +9,9 @@ import service.exceptions.UnauthorizedException;
 
 import java.util.UUID;
 
+import org.mindrot.jbcrypt.BCrypt;
+
+
 public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
@@ -25,7 +28,9 @@ public class UserService {
         if (isBlank(req.username()) || isBlank(req.password()) || isBlank(req.email())) { throw new BadRequestException("bad request"); }
         if (userDAO.getUser(req.username()) != null) { throw new AlreadyTakenException("already taken"); }
 
-        userDAO.createUser(new UserData(req.username(), req.password(), req.email()));
+        // Create hash
+        String hash = BCrypt.hashpw(req.password(), BCrypt.gensalt());
+        userDAO.createUser(new UserData(req.username(), hash, req.email()));
 
         String token = generateToken();
         authDAO.createAuth(new AuthData(token, req.username()));
@@ -38,7 +43,7 @@ public class UserService {
         UserData user = userDAO.getUser(req.username());
         if (user == null) { throw new UnauthorizedException("unauthorized"); }
         // check password
-        if (!req.password().equals(user.password())) { throw new UnauthorizedException("unauthorized"); }
+        if (!BCrypt.checkpw(req.password(), user.password())) { throw new UnauthorizedException("unauthorized"); }
 
         String token = generateToken();
         authDAO.createAuth(new AuthData(token, req.username()));
