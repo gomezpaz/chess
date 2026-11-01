@@ -49,6 +49,16 @@ public class SqlGameDAOTest {
     }
 
     @Test
+    @DisplayName("List More Than One Game")
+    public void listTwoGames() throws DataAccessException {
+        gameDAO.createGame("game name");
+        gameDAO.createGame("another name");
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertNotNull(games);
+        Assertions.assertTrue(games.size() > 1);
+    }
+
+    @Test
     @DisplayName("Update Game Successful")
     public void updateGameSuccessful() throws DataAccessException {
         int id = gameDAO.createGame("game name");
