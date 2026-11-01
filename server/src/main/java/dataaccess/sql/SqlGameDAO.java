@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class SqlGameDAO extends SqlDataAccess implements GameDAO {
@@ -56,12 +57,25 @@ public class SqlGameDAO extends SqlDataAccess implements GameDAO {
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return null;
+        Collection<GameData> games = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        games.add(readGame(rs));
+                    }
+                }
+            }
+        } catch (Exception e) { throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage())); }
+        return games;
     }
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-
+        String json = serializer.toJson(game.game());
+        var statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?";
+        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json, game.gameID());
     }
 
     @Override
