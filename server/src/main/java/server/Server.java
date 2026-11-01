@@ -17,36 +17,40 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        try {
+            javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+            UserDAO userDAO = new SqlUserDAO();
+            AuthDAO authDAO = new SqlAuthDAO();
+            GameDAO gameDAO = new SqlGameDAO();
 
-        // CLEAR
-        ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
-        ClearHandler clearHandler = new ClearHandler(clearService);
-        javalin.delete("/db", clearHandler::clear);
+            // CLEAR
+            ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
+            ClearHandler clearHandler = new ClearHandler(clearService);
+            javalin.delete("/db", clearHandler::clear);
 
-        // EXCEPTIONS
-        javalin.exception(BadRequestException.class, this::badRequestExceptionHandler);
-        javalin.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);
-        javalin.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
-        javalin.exception(Exception.class, this::exceptionHandler);
+            // EXCEPTIONS
+            javalin.exception(BadRequestException.class, this::badRequestExceptionHandler);
+            javalin.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);
+            javalin.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
+            javalin.exception(Exception.class, this::exceptionHandler);
 
-        // USER SERVICES
-        UserService userService = new UserService(userDAO, authDAO);
-        UserHandler userHandler = new UserHandler(userService);
-        javalin.post("/user", userHandler::register);
-        javalin.post("/session", userHandler::login);
-        javalin.delete("/session", userHandler::logout);
+            // USER SERVICES
+            UserService userService = new UserService(userDAO, authDAO);
+            UserHandler userHandler = new UserHandler(userService);
+            javalin.post("/user", userHandler::register);
+            javalin.post("/session", userHandler::login);
+            javalin.delete("/session", userHandler::logout);
 
-        // GAME SERVICES
-        GameService gameService = new GameService(authDAO, gameDAO);
-        GameHandler gameHandler = new GameHandler(gameService);
-        javalin.post("/game", gameHandler::createGame);
-        javalin.get("/game", gameHandler::listGames);
-        javalin.put("/game", gameHandler::joinGame);
+            // GAME SERVICES
+            GameService gameService = new GameService(authDAO, gameDAO);
+            GameHandler gameHandler = new GameHandler(gameService);
+            javalin.post("/game", gameHandler::createGame);
+            javalin.get("/game", gameHandler::listGames);
+            javalin.put("/game", gameHandler::joinGame);
+        } catch(DataAccessException ex) {
+            throw new RuntimeException("database setup error", ex);
+        }
     }
 
     public int run(int desiredPort) {
