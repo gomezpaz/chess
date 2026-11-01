@@ -17,91 +17,46 @@ import java.util.Collection;
 
 public class SqlGameDAOTest {
     private GameDAO gameDAO;
-    private AuthDAO authDAO;
-    private GameService gameService;
 
     @BeforeEach
     public void setup() throws DataAccessException {
         gameDAO = new SqlGameDAO();
         gameDAO.clearGames();
-        authDAO = new SqlAuthDAO();
-        authDAO.clearAuths();
-        gameService = new GameService(authDAO, gameDAO);
-        authDAO.createAuth(new AuthData("auth token","u"));
     }
 
     @Test
     @DisplayName("Game Creation Successful")
     public void gameCreationSuccessful() throws DataAccessException {
-        CreateGameResult createGameResult = gameService.createGame(
-                new CreateGameRequest("auth token", "game name")
-        );
-        int id = createGameResult.gameID();
-        Assertions.assertNotNull(gameDAO.getGame(id));
+        int id = gameDAO.createGame("game name");
+        Assertions.assertNotNull(id);
         Assertions.assertTrue(id != 0);
+    }
+
+    @Test
+    @DisplayName("Game Creation Unsuccessful")
+    public void gameCreationUnsuccessful() {
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.createGame(null));
     }
 
     @Test
     @DisplayName("List Games Successful")
     public void listGamesSuccessful() throws DataAccessException {
-        CreateGameResult createGameResult = gameService.createGame(
-                new CreateGameRequest("auth token", "game name")
-        );
-        int id = createGameResult.gameID();
+        int id = gameDAO.createGame("game name");
         GameData game = gameDAO.getGame(id);
-        ListGamesResult listGamesResult = gameService.listGames(
-                new ListGamesRequest("auth token")
-        );
-        Collection<GameData> games = listGamesResult.games();
+        Collection<GameData> games = gameDAO.listGames();
         Assertions.assertNotNull(games);
         Assertions.assertTrue(games.contains(game));
     }
 
     @Test
-    @DisplayName("Join Game Successful")
-    public void joinGameSuccessful() throws DataAccessException {
-        CreateGameResult createGameResult = gameService.createGame(
-                new CreateGameRequest("auth token", "game name")
-        );
-        int id = createGameResult.gameID();
-        gameService.joinGame(
-                new JoinGameRequest("auth token", ChessGame.TeamColor.WHITE, id)
-        );
+    @DisplayName("Update Game Successful")
+    public void updateGameSuccessful() throws DataAccessException {
+        int id = gameDAO.createGame("game name");
+        gameDAO.updateGame(new GameData(id, "w", "b", "game name", null));
         GameData game = gameDAO.getGame(id);
-        String username = authDAO.getAuth("auth token").username();
         Assertions.assertNotNull(game);
-        Assertions.assertEquals(game.whiteUsername(), username);
-    }
-
-    @Test
-    @DisplayName("White Already Taken")
-    public void whiteAlreadyTaken() throws DataAccessException {
-        CreateGameResult createGameResult = gameService.createGame(
-                new CreateGameRequest("auth token", "game name")
-        );
-        int id = createGameResult.gameID();
-        gameService.joinGame(
-                new JoinGameRequest("auth token", ChessGame.TeamColor.WHITE, id)
-        );
-        authDAO.createAuth(new AuthData("another token","s"));
-        Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(
-                new JoinGameRequest("another token", ChessGame.TeamColor.WHITE, id)
-        ));
-    }
-
-    @Test
-    @DisplayName("Join Game As Black")
-    public void joinGameAsBlack() throws DataAccessException {
-        CreateGameResult createGameResult = gameService.createGame(
-                new CreateGameRequest("auth token", "game name")
-        );
-        int id = createGameResult.gameID();
-        gameService.joinGame(
-                new JoinGameRequest("auth token", ChessGame.TeamColor.BLACK, id)
-        );
-        GameData game = gameDAO.getGame(id);
-        String username = authDAO.getAuth("auth token").username();
-        Assertions.assertNotNull(game);
-        Assertions.assertEquals(game.blackUsername(), username);
+        Assertions.assertEquals(game.whiteUsername(), "w");
+        Assertions.assertEquals(game.blackUsername(), "b");
+        Assertions.assertEquals(game.gameName(), "game name");
     }
 }
