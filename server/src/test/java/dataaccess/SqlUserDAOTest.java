@@ -1,6 +1,7 @@
 package dataaccess;
 
 import dataaccess.sql.*;
+import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,78 +13,62 @@ import service.exceptions.UnauthorizedException;
 
 public class SqlUserDAOTest {
     private UserDAO userDAO;
-    private AuthDAO authDAO;
-    private UserService userService;
 
     @BeforeEach
     public void setup() throws DataAccessException {
         userDAO = new SqlUserDAO();
-        authDAO = new SqlAuthDAO();
         userDAO.clearUsers();
-        authDAO.clearAuths();
-        userService = new UserService(userDAO, authDAO);
     }
 
     @Test
-    @DisplayName("Register Successful")
-    public void registerSuccessful() throws DataAccessException {
-        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
-        Assertions.assertEquals("u", registerResult.username());
-        Assertions.assertNotNull(registerResult.authToken());
-        Assertions.assertNotNull(userDAO.getUser("u"));
+    @DisplayName("Create User Successful")
+    public void createUserSuccessful() throws DataAccessException {
+        userDAO.createUser(new UserData("u", "p", "e"));
+
+        UserData stored = userDAO.getUser("u");
+        Assertions.assertNotNull(stored);
+        Assertions.assertEquals("u", stored.username());
+        Assertions.assertEquals("p", stored.password());
+        Assertions.assertEquals("e", stored.email());
     }
 
     @Test
-    @DisplayName("Register Missed A Field")
-    public void registerMissedAField() throws DataAccessException {
-        Assertions.assertThrows(BadRequestException.class, () -> userService.register(
-                new RegisterRequest("u", null, "e")
-        ));
+    @DisplayName("Create User Duplicate")
+    public void createUserDuplicate() throws DataAccessException {
+        userDAO.createUser(new UserData("u", "p", "e"));
+
+        Assertions.assertThrows(DataAccessException.class, () ->
+                userDAO.createUser(new UserData("u", "p", "e"))
+        );
     }
 
     @Test
-    @DisplayName("Register Duplicate")
-    public void registerDuplicate() throws DataAccessException {
-        userService.register(new RegisterRequest("u","p","e"));
-        Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(
-                new RegisterRequest("u","p2","e2")
-        ));
+    @DisplayName("Get User Successful")
+    public void getUserSuccessful() throws DataAccessException {
+        userDAO.createUser(new UserData("u", "p", "e"));
+        UserData user = userDAO.getUser("u");
+
+        Assertions.assertNotNull(user);
+        Assertions.assertEquals("e", user.email());
+        Assertions.assertEquals("p", user.password());
     }
 
     @Test
-    @DisplayName("Login Successful")
-    public void loginSuccessful() throws DataAccessException {
-        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
-        String token = registerResult.authToken();
-        userService.logout(new LogoutRequest(token));
-        LoginResult loginResult = userService.login(new LoginRequest("u","p"));
-        Assertions.assertNotNull(loginResult.authToken());
-        Assertions.assertNotEquals(registerResult.authToken(), loginResult.authToken());
+    @DisplayName("Get User Not Found")
+    public void getUserNotFound() throws DataAccessException {
+        Assertions.assertNull(userDAO.getUser("s"));
     }
 
     @Test
-    @DisplayName("Login Unsuccessful")
-    public void loginUnsuccessful() throws DataAccessException {
-        Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(
-                new LoginRequest("santi","p")
-        ));
+    @DisplayName("Clear Users")
+    public void clearUsers() throws DataAccessException {
+        userDAO.createUser(new UserData("a", "p", "e"));
+        userDAO.createUser(new UserData("b", "p", "e"));
+
+        userDAO.clearUsers();
+
+        Assertions.assertNull(userDAO.getUser("a"));
+        Assertions.assertNull(userDAO.getUser("b"));
     }
 
-    @Test
-    @DisplayName("Bad Password Login")
-    public void badPasswordLogin() throws DataAccessException {
-        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
-        Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(
-                new LoginRequest("u","another password")
-        ));
-    }
-
-    @Test
-    @DisplayName("Logout Successful")
-    public void logoutSuccessful() throws DataAccessException {
-        RegisterResult registerResult = userService.register(new RegisterRequest("u","p","e"));
-        String token = registerResult.authToken();
-        userService.logout(new LogoutRequest(token));
-        Assertions.assertNull(authDAO.getAuth(token));
-    }
 }
