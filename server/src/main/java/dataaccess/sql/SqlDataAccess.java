@@ -27,15 +27,10 @@ public abstract class SqlDataAccess {
                 ps.executeUpdate();
 
                 ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
+                if (rs.next()) { return rs.getInt(1); }
                 return 0;
             }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
+        } catch (SQLException e) { throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage())); }
     }
     private final String[] createStatements = {
             """
@@ -70,8 +65,6 @@ public abstract class SqlDataAccess {
                     preparedStatement.executeUpdate();
                 }
             }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
+        } catch (SQLException ex) { throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage())); }
     }
 }

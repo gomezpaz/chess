@@ -1,6 +1,6 @@
 package dataaccess;
 
-import dataaccess.sql.SqlUserDAO;
+import dataaccess.sql.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,9 @@ public class SqlUserDAOTest {
     @BeforeEach
     public void setup() throws DataAccessException {
         userDAO = new SqlUserDAO();
-        authDAO = new MemoryAuthDAO();
+        authDAO = new SqlAuthDAO();
+        userDAO.clearUsers();
+        authDAO.clearAuths();
         userService = new UserService(userDAO, authDAO);
     }
 
