@@ -5,6 +5,7 @@ import model.GameData;
 import org.junit.jupiter.api.*;
 import java.util.Collection;
 import server.Server;
+import chess.ChessGame;
 
 
 public class ServerFacadeTests {
@@ -121,11 +122,42 @@ public class ServerFacadeTests {
         Assertions.assertTrue(hasB);
     }
 
-
     @Test
     @DisplayName("List Games Invalid Token")
     public void listGamesInvalidToken() {
         Assertions.assertThrows(ResponseException.class, () -> facade.listGames("a"));
+    }
+
+    @Test
+    @DisplayName("Join Game Successful")
+    public void joinGameSuccessful() {
+        AuthData auth = facade.register("u","p","e");
+        int id = facade.createGame(auth.authToken(), "a");
+        facade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, id);
+        GameData game = facade.listGames(auth.authToken()).iterator().next();
+        Assertions.assertEquals("u", game.whiteUsername());
+    }
+
+    @Test
+    @DisplayName("Join Game Taken")
+    public void joinGameTaken() {
+        AuthData auth = facade.register("u","p","e");
+        int id = facade.createGame(auth.authToken(), "a");
+        facade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, id);
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, id));
+    }
+
+    @Test
+    @DisplayName("Join Game Not Found")
+    public void joinGameNotFound() {
+        AuthData auth = facade.register("u","p","e");
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, 999999));
+    }
+
+    @Test
+    @DisplayName("Join Game Invalid Token")
+    public void joinGameInvalidToken() {
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame("a", ChessGame.TeamColor.BLACK, 1));
     }
 
 }

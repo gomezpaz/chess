@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import chess.ChessGame;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -99,6 +100,10 @@ public class ServerFacade {
         return result.games();
     }
 
+    public void joinGame(String authToken, ChessGame.TeamColor color, int gameID) {
+        makeRequest("PUT", "/game", new JoinGameRequest(color, gameID), authToken, null);
+    }
+
 
     private record CreateGameRequest(String gameName) {
     }
@@ -109,9 +114,10 @@ public class ServerFacade {
     private record ListGamesResponse(Collection<GameData> games) {
     }
 
-
-
     private record LoginRequest(String username, String password) {
+    }
+
+    private record JoinGameRequest(ChessGame.TeamColor playerColor, int gameID) {
     }
 
 
