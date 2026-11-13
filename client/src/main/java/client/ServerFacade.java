@@ -5,12 +5,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import model.AuthData;
 import model.UserData;
+import model.GameData;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collection;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -85,6 +87,29 @@ public class ServerFacade {
     public void clear() {
         makeRequest("DELETE", "/db", null, null, null);
     }
+
+
+    public int createGame(String authToken, String gameName) {
+        CreateGameResponse result = makeRequest("POST", "/game", new CreateGameRequest(gameName), authToken, CreateGameResponse.class);
+        return result.gameID();
+    }
+
+    public Collection<GameData> listGames(String authToken) {
+        ListGamesResponse result = makeRequest("GET", "/game", null, authToken, ListGamesResponse.class);
+        return result.games();
+    }
+
+
+    private record CreateGameRequest(String gameName) {
+    }
+
+    private record CreateGameResponse(int gameID) {
+    }
+
+    private record ListGamesResponse(Collection<GameData> games) {
+    }
+
+
 
     private record LoginRequest(String username, String password) {
     }

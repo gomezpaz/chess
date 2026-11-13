@@ -1,7 +1,9 @@
 package client;
 
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
+import java.util.Collection;
 import server.Server;
 
 
@@ -82,5 +84,48 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> facade.login("u","p"));
     }
 
+
+    @Test
+    @DisplayName("Create Game Successful")
+    public void createGameSuccessful() {
+        AuthData auth = facade.register("u","p","e");
+        int id = facade.createGame(auth.authToken(), "a");
+        Assertions.assertTrue(id > 0);
+    }
+
+    @Test
+    @DisplayName("Create Game Invalid Token")
+    public void createGameInvalidToken() {
+        Assertions.assertThrows(ResponseException.class, () -> facade.createGame("a","b"));
+    }
+
+    @Test
+    @DisplayName("List Games Successful")
+    public void listGamesSuccessful() {
+        AuthData auth = facade.register("u","p","e");
+        facade.createGame(auth.authToken(), "a");
+        facade.createGame(auth.authToken(), "b");
+        Collection<GameData> games = facade.listGames(auth.authToken());
+
+        Assertions.assertEquals(2, games.size());
+
+        boolean hasA = false;
+        boolean hasB = false;
+
+        for (GameData game : games) {
+            if (game.gameName().equals("a")) { hasA = true; }
+            if (game.gameName().equals("b")) { hasB = true; }
+        }
+
+        Assertions.assertTrue(hasA);
+        Assertions.assertTrue(hasB);
+    }
+
+
+    @Test
+    @DisplayName("List Games Invalid Token")
+    public void listGamesInvalidToken() {
+        Assertions.assertThrows(ResponseException.class, () -> facade.listGames("a"));
+    }
 
 }
