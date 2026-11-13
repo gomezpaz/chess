@@ -1,6 +1,9 @@
 package client;
 
 import model.AuthData;
+import model.GameData;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -9,6 +12,7 @@ public class ChessClient {
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
     private String authToken;
+    private List<GameData> games = new ArrayList<>();
 
     public ChessClient(int port) {
         server = new ServerFacade(port);
@@ -48,7 +52,13 @@ public class ChessClient {
                 default -> help();
             };
         }
-        return help();
+        return switch (cmd) {
+            case "help" -> params.length == 0 ? help() : "Expected: help";
+            case "logout" -> logout(params);
+            case "create" -> createGame(params);
+            case "list" -> listGames(params);
+            default -> help();
+        };
     }
 
     public String register(String... params) {
@@ -65,6 +75,38 @@ public class ChessClient {
         authToken = auth.authToken();
         state = State.SIGNEDIN;
         return "Logged in as " + auth.username();
+    }
+
+    public String logout(String... params) {
+        if (params.length != 0) { return "Expected: logout"; }
+        server.logout(authToken);
+        authToken = null;
+        state = State.SIGNEDOUT;
+        games.clear();
+        return "Logged out";
+    }
+
+    public String createGame(String... params) {
+        if (params.length == 0) { return "Expected: create <name>"; }
+        String name = String.join(" ", params);
+        server.createGame(authToken, name);
+        games.clear();
+        return "Created game " + name;
+    }
+
+    public String listGames(String... params) {
+        if (params.length != 0) { return "Expected: list"; }
+        games = new ArrayList<>(server.listGames(authToken));
+        if (games.isEmpty()) { return "No games available"; }
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < games.size(); i++) {
+            GameData game = games.get(i);
+            String white = game.whiteUsername() == null ? "open" : game.whiteUsername();
+            String black = game.blackUsername() == null ? "open" : game.blackUsername();
+            result.append(i + 1).append(". ").append(game.gameName()).append(" | White: ").append(white).append(" | Black: ").append(black).append("\n");
+        }
+        return result.toString();
     }
 
     public String help() {
