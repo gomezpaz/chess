@@ -3,6 +3,8 @@ package client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import model.AuthData;
+import model.UserData;
 
 import java.io.IOException;
 import java.net.URI;
@@ -66,6 +68,27 @@ public class ServerFacade {
 
         return handleResponse(response, resultClass);
     }
+
+
+    public AuthData register(String username, String password, String email) {
+        return makeRequest("POST", "/user", new UserData(username, password, email), null, AuthData.class);
+    }
+
+    public AuthData login(String username, String password) {
+        return makeRequest("POST", "/session", new LoginRequest(username, password), null, AuthData.class);
+    }
+
+    public void logout(String authToken) {
+        makeRequest("DELETE", "/session", null, authToken, null);
+    }
+
+    public void clear() {
+        makeRequest("DELETE", "/db", null, null, null);
+    }
+
+    private record LoginRequest(String username, String password) {
+    }
+
 
     private record ErrorResponse(String message) {
     }
