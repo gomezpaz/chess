@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import java.util.ArrayList;
@@ -57,6 +58,8 @@ public class ChessClient {
             case "logout" -> logout(params);
             case "create" -> createGame(params);
             case "list" -> listGames(params);
+            case "play" -> playGame(params);
+            case "observe" -> observeGame(params);
             default -> help();
         };
     }
@@ -107,6 +110,33 @@ public class ChessClient {
             result.append(i + 1).append(". ").append(game.gameName()).append(" | White: ").append(white).append(" | Black: ").append(black).append("\n");
         }
         return result.toString();
+    }
+
+    private GameData getGame(String number) {
+        int i;
+        try {
+            i = Integer.parseInt(number) - 1;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid game number");
+        }
+        if (games.isEmpty()) { games = new ArrayList<>(server.listGames(authToken)); }
+        if (i < 0 || i >= games.size()) { throw new IllegalArgumentException("Game not found"); }
+        return games.get(i);
+    }
+
+    public String playGame(String... params) {
+        if (params.length != 2) { return "Expected: play <number> <WHITE|BLACK>"; }
+        if (!params[1].equalsIgnoreCase("WHITE") && !params[1].equalsIgnoreCase("BLACK")) { return "Color must be WHITE or BLACK"; }
+        ChessGame.TeamColor color = ChessGame.TeamColor.valueOf(params[1].toUpperCase());
+        GameData game = getGame(params[0]);
+        server.joinGame(authToken, color, game.gameID());
+        return "Joined game " + game.gameName() + " as " + color;
+    }
+
+    public String observeGame(String... params) {
+        if (params.length != 1) { return "Expected: observe <number>"; }
+        GameData game = getGame(params[0]);
+        return "Observing game " + game.gameName();
     }
 
     public String help() {
