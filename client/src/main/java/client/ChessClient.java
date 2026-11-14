@@ -8,9 +8,11 @@ import java.util.List;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import ui.BoardRenderer;
 
 public class ChessClient {
     private final ServerFacade server;
+    private final BoardRenderer board = new BoardRenderer();
     private State state = State.SIGNEDOUT;
     private String authToken;
     private List<GameData> games = new ArrayList<>();
@@ -130,12 +132,14 @@ public class ChessClient {
         ChessGame.TeamColor color = ChessGame.TeamColor.valueOf(params[1].toUpperCase());
         GameData game = getGame(params[0]);
         server.joinGame(authToken, color, game.gameID());
+        board.draw(new ChessGame().getBoard(), color == ChessGame.TeamColor.WHITE);
         return "Joined game " + game.gameName() + " as " + color;
     }
 
     public String observeGame(String... params) {
         if (params.length != 1) { return "Expected: observe <number>"; }
         GameData game = getGame(params[0]);
+        board.draw(new ChessGame().getBoard(), true);
         return "Observing game " + game.gameName();
     }
 
