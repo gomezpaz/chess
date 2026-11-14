@@ -109,7 +109,12 @@ public class ChessClient {
             GameData game = games.get(i);
             String white = game.whiteUsername() == null ? "open" : game.whiteUsername();
             String black = game.blackUsername() == null ? "open" : game.blackUsername();
-            result.append(i + 1).append(". ").append(game.gameName()).append(" | White: ").append(white).append(" | Black: ").append(black).append("\n");
+            result.append(i + 1)
+                    .append(". ")
+                    .append(game.gameName())
+                    .append(" | White: ")
+                    .append(white).append(" | Black: ")
+                    .append(black).append("\n");
         }
         return result.toString();
     }
