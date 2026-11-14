@@ -1,17 +1,11 @@
 package dataaccess;
 
-import chess.ChessGame;
-import dataaccess.sql.SqlAuthDAO;
 import dataaccess.sql.SqlGameDAO;
-import dataaccess.sql.SqlUserDAO;
-import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.*;
-import service.exceptions.AlreadyTakenException;
 
 import java.util.Collection;
 
